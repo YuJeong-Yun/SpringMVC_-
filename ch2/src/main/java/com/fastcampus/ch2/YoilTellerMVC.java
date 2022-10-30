@@ -19,10 +19,8 @@ public class YoilTellerMVC {
 //	http://localhost:8088/ch2/getYoilMVC?year=2021&month=10&day=1
 	@RequestMapping("/getYoilMVC")
 //	public void main(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	public ModelAndView main(int year, int month, int day) throws IOException {
+	public String main(int year, int month, int day, Model model) throws IOException {
 
-		ModelAndView mv = new ModelAndView();
-		
 		// 1.유효성 검사
 //		if (!isValid(year, month, day)) {
 //			return "yoilError";
@@ -32,15 +30,13 @@ public class YoilTellerMVC {
 		char yoil = getYoil(year, month, day);
 
 		// 3. 계산한 결과를 model에 저장
-		mv.addObject("year", year);
-		mv.addObject("month", month);
-		mv.addObject("day", day);
-		mv.addObject("yoil", yoil);
+		model.addAttribute("year", year);
+		model.addAttribute("month", month);
+		model.addAttribute("day", day);
+		model.addAttribute("yoil", yoil);
 		
-		// 4. 결과를 보여줄 view를 저장
-		mv.setViewName("yoil");
 		
-		return mv;
+		return "yoil";
 		
 //		return "yoil"; // /WEB-INF/view/yoil.jsp
 
