@@ -1,22 +1,16 @@
 package com.fastcampus.ch2;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Calendar;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 // 년월일을 입력하면 요일을 알려주는 프로그램
 @Controller
-public class YoilTellerMVC {
+public class YoilTellerMVC4 {
 	@ExceptionHandler(Exception.class)
 	public String catcher(Exception ex) {
 		ex.printStackTrace();
@@ -24,24 +18,21 @@ public class YoilTellerMVC {
 	}
 	
 //	http://localhost:8088/ch2/getYoilMVC?year=2021&month=10&day=1
-	@RequestMapping("/getYoilMVC")
+	@RequestMapping("/getYoilMVC4")
 //	public void main(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	public String main(@RequestParam(required=true) int year, 
-			@RequestParam(required=true) int month, 
-			@RequestParam(required=true) int day, Model model) throws IOException {
-
+	public String main(MyDate date, Model model) throws IOException {
+		System.out.println("data="+date);
+		
 		// 1.유효성 검사
-//		if (!isValid(year, month, day)) {
-//			return "yoilError";
-//		}
+		if (!isValid(date)) {
+			return "yoilError";
+		}
 
 		// 2. 요일 계산
-		char yoil = getYoil(year, month, day);
+		char yoil = getYoil(date);
 
 		// 3. 계산한 결과를 model에 저장
-		model.addAttribute("year", year);
-		model.addAttribute("month", month);
-		model.addAttribute("day", day);
+		model.addAttribute("myDate", date);
 		model.addAttribute("yoil", yoil);
 		
 		
@@ -58,8 +49,19 @@ public class YoilTellerMVC {
 
 	}
 
+	private boolean isValid(MyDate date) {
+		return isValid(date.getYear(), date.getMonth(), date.getDay());
+	}
+
+	private char getYoil(MyDate date) {
+		return getYoil(date.getYear(), date.getMonth(), date.getDay());
+	}
+
 	private boolean isValid(int year, int month, int day) {
-		return true;
+    	if(year==-1 || month==-1 || day==-1) 
+    		return false;
+    	
+    	return (1<=month && month<=12) && (1<=day && day<=31); // 간단히 체크 
 	}
 
 	private char getYoil(int year, int month, int day) {
