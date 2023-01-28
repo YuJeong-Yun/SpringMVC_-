@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:set var="loginOut" value="${sessionScope.id == null ? 'login' : 'logout'}"/>
-<c:set var="loginOutLink" value="${sessionScope.id == null ? '/login/login' : '/login/logout' }"/>
+<%@ page session="false" %> 
+<c:set var="loginOut" value="${pageContext.request.session.getAttribute('id') == null ? 'login' : 'logout'}"/>
+<c:set var="loginOutLink" value="${pageContext.request.session.getAttribute('id') == null ? '/login/login' : '/login/logout' }"/>
 <!DOCTYPE html>
 <html>
 <head>
