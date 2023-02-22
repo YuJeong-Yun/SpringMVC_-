@@ -11,15 +11,25 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-@Component class Car {}
-@Component class SportsCar extends Car {}
-@Component class Truck extends Car {}
- class Engine {}
+@Component
+class Car {
+}
+
+@Component
+class SportsCar extends Car {
+}
+
+@Component
+class Truck extends Car {
+}
+
+class Engine {
+}
 
 class AppContext {
     Map map; // 객체 저장소
 
-    AppContext(){
+    AppContext() {
         map = new HashMap();
         doComponentScan();
     }
@@ -32,12 +42,12 @@ class AppContext {
             ClassLoader classLoader = AppContext.class.getClassLoader();
             ClassPath classPath = ClassPath.from(classLoader);
 
-            Set<ClassPath.ClassInfo> set =  classPath.getTopLevelClasses("com.fastcampus.ch3.diCopy3");
+            Set<ClassPath.ClassInfo> set = classPath.getTopLevelClasses("com.fastcampus.ch3.diCopy3");
 
-            for(ClassPath.ClassInfo classInfo : set) {
+            for (ClassPath.ClassInfo classInfo : set) {
                 Class clazz = classInfo.load();
                 Component component = (Component) clazz.getAnnotation(Component.class);
-                if(component!=null) {
+                if (component != null) {
                     String id = StringUtils.uncapitalize(classInfo.getSimpleName());
                     map.put(id, clazz.newInstance());
                 }
@@ -48,8 +58,17 @@ class AppContext {
 
     }
 
-    Object getBean(String key) {
+    Object getBean(String key) { // by Name
         return map.get(key);
+    }
+
+    Object getBean(Class clazz) { // by Type
+        for (Object obj : map.values()) {
+            if (clazz.isInstance(obj)) {
+                return obj;
+            }
+        }
+        return null;
     }
 }
 
@@ -57,7 +76,9 @@ public class Main3 {
     public static void main(String[] args) throws Exception {
         AppContext ac = new AppContext();
         Car car = (Car) ac.getBean("car");
+        Car car2 = (Car) ac.getBean(Car.class);
         Engine engine = (Engine) ac.getBean("engine");
+
         System.out.println("car = " + car);
         System.out.println("engine = " + engine);
     }
