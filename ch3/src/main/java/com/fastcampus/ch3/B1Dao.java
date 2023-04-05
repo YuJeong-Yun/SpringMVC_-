@@ -21,6 +21,7 @@ public class B1Dao {
         try {
 //            conn = ds.getConnection();
             conn = DataSourceUtils.getConnection(ds);
+            System.out.println("conn = " + conn);
             pstmt = conn.prepareStatement("insert into b1 values(?,?)");
             pstmt.setInt(1, key);
             pstmt.setInt(2, value);

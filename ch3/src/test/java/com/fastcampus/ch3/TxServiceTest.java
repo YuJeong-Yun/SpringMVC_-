@@ -15,6 +15,6 @@ public class TxServiceTest extends TestCase {
 
     @Test
     public void insertA1WithoutTxTest() throws Exception {
-        txService.insertA1WithTxFail();
+        txService.insertA1WithTx();
     }
 }
