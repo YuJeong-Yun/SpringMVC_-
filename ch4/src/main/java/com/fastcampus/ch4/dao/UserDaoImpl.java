@@ -25,7 +25,7 @@ public class UserDaoImpl implements UserDao {
         try (  // try-with-resources - since jdk7
                Connection conn = ds.getConnection();
                PreparedStatement pstmt = conn.prepareStatement(sql);
-        ){
+        ) {
             pstmt.setString(1, id);
             return pstmt.executeUpdate(); //  insert, delete, update
 //      } catch (Exception e) {
@@ -42,9 +42,9 @@ public class UserDaoImpl implements UserDao {
         try (
                 Connection conn = ds.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery(); //  select
-        ){
+        ) {
             pstmt.setString(1, id);
+            ResultSet rs = pstmt.executeQuery(); //  select
 
             if (rs.next()) {
                 user = new User();
@@ -67,10 +67,10 @@ public class UserDaoImpl implements UserDao {
         int rowCnt = 0;
         String sql = "INSERT INTO user_info VALUES (?,?,?,?,?,?, now()) ";
 
-        try(
+        try (
                 Connection conn = ds.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql); // SQL Injection공격, 성능향상
-        ){
+        ) {
             pstmt.setString(1, user.getId());
             pstmt.setString(2, user.getPwd());
             pstmt.setString(3, user.getName());
@@ -93,7 +93,7 @@ public class UserDaoImpl implements UserDao {
         try (
                 Connection conn = ds.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-        ){
+        ) {
             pstmt.setString(1, user.getPwd());
             pstmt.setString(2, user.getName());
             pstmt.setString(3, user.getEmail());
@@ -112,11 +112,11 @@ public class UserDaoImpl implements UserDao {
     public int count() throws Exception {
         String sql = "SELECT count(*) FROM user_info ";
 
-        try(
+        try (
                 Connection conn = ds.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery();
-        ){
+        ) {
             rs.next();
             int result = rs.getInt(1);
 
@@ -126,8 +126,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteAll() throws Exception {
-        try (Connection conn = ds.getConnection();)
-        {
+        try (Connection conn = ds.getConnection();) {
             String sql = "DELETE FROM user_info ";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
