@@ -48,7 +48,7 @@ public class BoardDaoImplTest {
     @Test
     public void insertTestDate() throws Exception {
         boardDao.deleteAll();
-        for (int i = 1; i < 250; i++) {
+        for (int i = 21; i < 250; i++) {
             BoardDto boardDto = new BoardDto("title" + i, "no content", "asdf");
             boardDao.insert(boardDto);
         }

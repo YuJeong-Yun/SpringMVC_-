@@ -2,6 +2,7 @@ package com.fastcampus.ch4.controller;
 
 import com.fastcampus.ch4.domain.BoardDto;
 import com.fastcampus.ch4.domain.PageHandler;
+import com.fastcampus.ch4.domain.SearchCondition;
 import com.fastcampus.ch4.service.BoardService;
 import com.mysql.cj.protocol.x.Notice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class BoardController {
         } catch (Exception e) {
             e.printStackTrace();
             m.addAttribute(boardDto);
-            m.addAttribute( "msg", "MOD_ERR");
+            m.addAttribute("msg", "MOD_ERR");
             return "board";
         }
 
@@ -65,7 +66,7 @@ public class BoardController {
         } catch (Exception e) {
             e.printStackTrace();
             m.addAttribute(boardDto);
-            m.addAttribute( "msg", "WRT_ERR");
+            m.addAttribute("msg", "WRT_ERR");
             return "board";
         }
     }
@@ -114,26 +115,18 @@ public class BoardController {
     }
 
     @GetMapping("/list")
-    public String list(Integer page, Integer pageSize, Model m, HttpServletRequest request) {
+    public String list(SearchCondition sc, Model m, HttpServletRequest request) {
         if (!loginCheck(request))
             return "redirect:/login/login?toURL=" + request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
 
-        if (page == null) page = 1;
-        if (pageSize == null) pageSize = 10;
-
         try {
-            int totalCnt = boardService.getCount();
-            PageHandler pageHandler = new PageHandler(totalCnt, page, pageSize);
+            int totalCnt = boardService.getSearchResultCnt(sc);
+            PageHandler pageHandler = new PageHandler(totalCnt, sc);
 
-            Map map = new HashMap();
-            map.put("offset", (page - 1) * pageSize);
-            map.put("pageSize", pageSize);
 
-            List<BoardDto> list = boardService.getPage(map);
+            List<BoardDto> list = boardService.getSearchResultPage(sc);
             m.addAttribute("list", list);
             m.addAttribute("ph", pageHandler);
-            m.addAttribute("page", page);
-            m.addAttribute("pageSize", pageSize);
         } catch (Exception e) {
             e.printStackTrace();
         }
