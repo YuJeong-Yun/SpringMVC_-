@@ -9,7 +9,13 @@
 comment: <input type="text" name="comment"><br>
 <button id="sendBtn" type="button">SEND</button>
 <button id="modBtn" type="button">수정</button>
-<div id="commentList"></div>
+
+<div id="commentList">
+</div>
+<div id="replyForm" style="display:none">
+    <input type="text" name="replyComment">
+    <button id="wrtRepBtn" type="button">등록</button>
+</div>
 <script>
     let bno = 796;
 
@@ -33,7 +39,7 @@ comment: <input type="text" name="comment"><br>
             let cno = $(this).attr("data-cno");
             let comment = $("input[name=comment]").val();
 
-            if (comment글.trim() == '') {
+            if (comment.trim() == '') {
                 alert("댓글을 입력해주세요.");
                 $(" input[name=comment]").focus();
                 return;
@@ -41,9 +47,9 @@ comment: <input type="text" name="comment"><br>
 
             $.ajax({
                 type: 'PATCH',       // 요청 메서드
-                url: '/ch4/comments/'+cno,  // 요청 URI
+                url: '/ch4/comments/' + cno,  // 요청 URI
                 headers: {"content-type": "application/json"}, // 요청 헤더
-                data: JSON.stringify({cno:cno, comment: comment}),  // 서버로 전송할 데이터. stringify()로 직렬화 필요.
+                data: JSON.stringify({cno: cno, comment: comment}),  // 서버로 전송할 데이터. stringify()로 직렬화 필요.
                 success: function (result) {
                     alert(result);
                     showList(bno);
@@ -55,6 +61,38 @@ comment: <input type="text" name="comment"><br>
         });
 
 
+        $("#wrtRepBtn").click(function () {
+                let comment = $("input[name=replyComment]").val();
+                let pcno = $("#replyForm").parent().attr("data-pcno");
+
+                if (comment.trim() == '') {
+                    alert("댓글을 입력해주세요.");
+                    $(" input[name=replyComment]").focus();
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',       // 요청 메서드
+                    url: '/ch4/comments?bno=' + bno,  // 요청 URI
+                    headers: {"content-type": "application/json"}, // 요청 헤더
+                    data: JSON.stringify({pcno: pcno, bno: bno, comment: comment}),  // 서버로 전송할 데이터. stringify()로 직렬화 필요.
+                    success: function (result) {
+                        alert(result);
+                        showList(bno);
+                    },
+                    error: function () {
+                        alert("error")
+                    } // 에러가 발생했을 때, 호출될 함수
+                }); // $.ajax()
+
+                $("#replyForm").css("display", "none");
+                $("input[name=replyComment]").val("");
+                $("#replyForm").appendTo("body");
+            }
+        )
+        ;
+
+
         $("#sendBtn").click(function () {
             let comment = $("input[name=comment]").val();
 
@@ -63,7 +101,6 @@ comment: <input type="text" name="comment"><br>
                 $(" input[name=comment]").focus();
                 return;
             }
-
             $.ajax({
                 type: 'POST',       // 요청 메서드
                 url: '/ch4/comments?bno=' + bno,  // 요청 URI
@@ -80,7 +117,7 @@ comment: <input type="text" name="comment"><br>
         });
 
         $("#commentList").on("click", ".modBtn", function () {
-            let cno = $(this).parent().parent().attr("data-cno");
+            let cno = $(this).parent().attr("data-cno");
             let comment = $("span.comment", $(this).parent()).text();
 
             // 1.comment의 내용을 input에 뿌려주기
@@ -89,10 +126,18 @@ comment: <input type="text" name="comment"><br>
             $("#modBtn").attr("data-cno", cno);
         });
 
+        $("#commentList").on("click", ".replyBtn", function () {
+            // 1.replyForm을 옮기고
+            $("#replyForm").appendTo($(this).parent());
+
+            // 2.답글을 입력할 폼을 보여주고,
+            $("#replyForm").css("display", "block");
+
+        });
 
         $("#commentList").on("click", ".delBtn", function () {
-            let cno = $(this).parent().parent().attr("data-cno");
-            let bno = $(this).parent().parent().attr("data-bno");
+            let cno = $(this).parent().attr("data-cno");
+            let bno = $(this).parent().attr("data-bno");
             $.ajax({
                 type: 'DELETE',       // 요청 메서드
                 url: '/ch4/comments/' + cno + '?bno=' + bno,  // 요청 URI
@@ -108,17 +153,22 @@ comment: <input type="text" name="comment"><br>
     });
 
     let toHTML = function (comments) {
-        let tmp = "<ul>";
+        let tmp = '<ul>';
 
         comments.forEach(function (comments) {
             tmp += '<li data-cno=' + comments.cno;
             tmp += ' data-pcno=' + comments.pcno;
-            tmp += ' data-bno=' + comments.bno + '>'
-            tmp += ' commenter=<sapn class="commenter">' + comments.commenter + '</span>';
-            tmp += ' comment-<span class="comment">' + comments.comment + '</span>'
-            tmp += ' up-date=' + comments.up_date
-            tmp += '<button class="delBtn">삭제</button>'
-            tmp += '<button class="modBtn">수정</button>'
+            tmp += ' data-bno=' + comments.bno + '>';
+            if (comments.cno != comments.pcno) {
+                tmp += 'ㄴ';
+            }
+            // tmp += ' commenter=<sapn class="commenter">' + comments.commenter +'</span>';
+            tmp += ' commenter=' + comments.commenter;
+            tmp += ' comment=<span class="comment">' + comments.comment + '</span>';
+            tmp += ' up-date=' + comments.up_date;
+            tmp += '<button class="delBtn">삭제</button>';
+            tmp += '<button class="modBtn">수정</button>';
+            tmp += '<button class="replyBtn">답글</button>';
             tmp += '</li>'
         });
 
